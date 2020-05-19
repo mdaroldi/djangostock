@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from quotes.models import Stock
+from .iex_token import iex_publishable_token
 
 
 def home(request):
@@ -8,7 +10,7 @@ def home(request):
     if request.method == 'POST':
         ticker = request.POST['ticker']
         api_request = requests.get("https://cloud.iexapis.com/stable/stock/" + ticker + "/quote?token"
-                                   "=pk_2a463552c6ce4f0b9c628679ddfb0a96")
+                                   "=" + iex_publishable_token)
         try:
             api = json.loads(api_request.content)
         except Exception as e:
@@ -20,3 +22,9 @@ def home(request):
 
 def about(request):
     return render(request, 'about.html', {})
+
+
+def add_stock(request):
+
+    ticker = Stock.objects.all()
+    return render(request, 'add_stock.html', {'ticker': ticker})
