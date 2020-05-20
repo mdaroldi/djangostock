@@ -5,4 +5,4 @@ class Stock(models.Model):
     ticker = models.CharField(max_length=10)
 
     def __str__(self):
-        return self.ticker
+        return "%s" % self.ticker.lower()
