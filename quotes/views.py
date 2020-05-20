@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from quotes.models import Stock
 from .iex_token import iex_publishable_token
+from django.contrib import messages
+from .forms import StockForm
 
 
 def home(request):
@@ -25,6 +27,20 @@ def about(request):
 
 
 def add_stock(request):
+    if request.method == 'POST':
+        form = StockForm(request.POST or None)
 
-    ticker = Stock.objects.all()
-    return render(request, 'add_stock.html', {'ticker': ticker})
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Stock has been added!")
+            return redirect('add_stock')
+    else:
+        ticker = Stock.objects.all()
+        return render(request, 'add_stock.html', {'ticker': ticker})
+
+
+def delete(request, stock_id):
+    item = Stock.objects.get(pk=stock_id)
+    item.delete()
+    messages.success(request, "Stock has been deleted!")
+    return redirect('add_stock')
