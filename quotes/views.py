@@ -27,6 +27,9 @@ def about(request):
 
 
 def add_stock(request):
+    import requests
+    import json
+
     if request.method == 'POST':
         form = StockForm(request.POST or None)
 
@@ -36,7 +39,15 @@ def add_stock(request):
             return redirect('add_stock')
     else:
         ticker = Stock.objects.all()
-        return render(request, 'add_stock.html', {'ticker': ticker})
+        output = []
+        for ticker_item in ticker:
+            api_request = requests.get("https://cloud.iexapis.com/stable/stock/" + str(ticker_item) + "/quote?token"
+                                                                                            "=" + iex_publishable_token)
+            try:
+                output.append(json.loads(api_request.content))
+            except Exception as e:
+                api = "Error..."
+        return render(request, 'add_stock.html', {'ticker': ticker, 'output': output})
 
 
 def delete(request, stock_id):
