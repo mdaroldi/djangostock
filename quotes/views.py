@@ -36,13 +36,14 @@ def add_stock(request):
         ticker = Stock.objects.all()
         output = []
         for ticker_item in ticker:
-            print("ticker: ", ticker_item, type(ticker_item))
             api_request = requests.get("https://cloud.iexapis.com/stable/stock/" + str(ticker_item) + "/quote?token"
                                                                                             "=" + iex_publishable_token)
             try:
                 output.append(json.loads(api_request.content))
             except Exception as e:
                 api = "Error..."
+            except requests.exceptions.RequestException as e:
+                return redirect('add_stock')
         return render(request, 'add_stock.html', {'ticker': ticker, 'output': output})
 
 
